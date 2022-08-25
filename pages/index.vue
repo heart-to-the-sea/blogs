@@ -1,4 +1,3 @@
-
 <template>
   <div>
     <BlogHeader root-dom-name=".main"></BlogHeader>
@@ -9,26 +8,26 @@
 </template>
 
 <script setup lang="ts">
-import BlogBox from '../components/index/BlogBox.vue';
-import BlogHeader from '../components/index/BlogHeader.vue' 
+import BlogBox from "../components/index/BlogBox.vue";
+import BlogHeader from "../components/index/BlogHeader.vue";
 </script>
 <style>
 .mark {
-  color:red;
+  color: red;
 }
 </style>
 <style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 </style>
 <style>
-  .main {
-    width: 700px;
-    min-height: 90vh;
-    margin: auto;
-    margin-top: 75px;
-  }
+.main {
+  width: 700px;
+  min-height: 90vh;
+  margin: auto;
+  margin-top: 75px;
+}
 </style>
