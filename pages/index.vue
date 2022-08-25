@@ -1,6 +1,6 @@
 <template>
   <div>
-    <BlogHeader root-dom-name=".main"></BlogHeader>
+    <BlogHeader></BlogHeader>
     <main class="main" ref="box">
       <BlogBox v-for="index in 10" :key="index"></BlogBox>
     </main>
