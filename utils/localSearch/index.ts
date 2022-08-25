@@ -1,74 +1,125 @@
 export interface LocalSearchI {
   // 查询
-  queryTextDom():LocalSearch
+  queryTextDom(): LocalSearch;
   // 设置根节点
-  setRootDom (dom: string):LocalSearch
+  setRootDom(dom: string): LocalSearch;
   // 标记
-  mark():void
+  mark(): void;
   // 取消标记
-  cleanMark():void
+  cleanMark(): void;
 }
-export class LocalSearch implements LocalSearchI{
-  static readonly TEXT_NODE_TYPE = 3
-  private root!:HTMLElement
-  private searchStr:string
-  private rootName:string
-  private textNodeList:Text[] = []
-  setRootDom (dom: string ) {
-    this.rootName = dom
-    return this
+
+export class LocalSearch implements LocalSearchI {
+  static readonly TEXT_NODE_TYPE = 3;
+  private root!: HTMLElement;
+  private searchStr: string;
+  private lastSearchStr = "";
+  private rootName: string;
+  private textNodeList: Text[] = [];
+  setRootDom(dom: string) {
+    this.rootName = dom;
+    return this;
   }
-  setSearchStr (str:string) {
-    this.cleanMark()
-    this.searchStr = str
-    return this
+  setSearchStr(str: string) {
+    this.cleanMark();
+    this.searchStr = str;
+    return this;
   }
-  private searchRoot () {
-    this.root = document.querySelector(this.rootName)
+  private searchRoot() {
+    this.root = document.querySelector(this.rootName);
   }
-  queryTextDom () {
-    this.searchRoot()
-    const textList:Text[] = []
-    this._queryTextDom(this.root,LocalSearch.TEXT_NODE_TYPE,textList)
-    this.textNodeList = textList
-    return this
+  queryTextDom() {
+    if (this.searchStr == undefined && this.searchStr === "") return;
+    this.searchRoot();
+    const textList: Text[] = [];
+    this._queryTextDom(this.root, LocalSearch.TEXT_NODE_TYPE, textList);
+    this.textNodeList = textList.filter((item) => !!item);
+    return this;
   }
-  private _queryTextDom (dom:HTMLElement | Text | ChildNode, type:number, textList: Text[]) {
-    console.log(dom instanceof Text && dom.nodeType === type,dom.nodeType)
-    if (dom instanceof Text && dom.nodeType === type) {
+  private _queryTextDom(
+    dom: HTMLElement | Text | ChildNode,
+    type: number,
+    textList: Text[]
+  ) {
+    if (
+      dom instanceof Text &&
+      dom.nodeType === type &&
+      !this.hasNoSearchElement(dom.parentElement)
+    ) {
       if (dom.data.includes(this.searchStr)) {
-        console.log(dom)
-        textList.push(dom)
+        console.log(dom);
+        textList.push(dom);
       }
     }
-    console.log(dom.childNodes)
+    console.log(dom.childNodes);
     if (dom.childNodes) {
       for (const node of dom.childNodes) {
-        this._queryTextDom(node,type,textList)
+        this._queryTextDom(node, type, textList);
       }
     }
   }
   mark() {
-    console.log(this.textNodeList)
-    this._mark(this.textNodeList, this.searchStr)
+    console.log(this.textNodeList);
+    this._mark(this.textNodeList, this.searchStr);
   }
-  private _mark (textList:Text[],searchStr: string) {
-    textList.forEach(item => {
-      const parent = item.parentNode as HTMLDivElement
-      parent.classList.add('mark-parent')
-      parent.innerHTML = item.data.replaceAll(searchStr,`<span class="mark">$&</span>`);
-    })
+  private _mark(textList: Text[], searchStr: string) {
+    textList.forEach((item) => {
+      try {
+        // const parent = item.parentNode as HTMLDivElement;
+        // parent &&
+        //   parent.classList &&
+        //   parent.classList.add &&
+        //   parent.classList.add("mark-parent");
+        // parent.innerHTML = parent.innerHTML.replace(
+        //   searchStr,
+        //   `<span class="mark">$&</span>`
+        // );
+        const childNodes = Array.from(item.parentElement.childNodes);
+        const index = this.getDomIndex(childNodes, item);
+        if (index !== -1) {
+          const span = document.createElement("span");
+          span.classList.add("parcel");
+
+          span.innerHTML = item.data.replace(
+            searchStr,
+            `<span class="mark">$&</span>`
+          );
+          item.parentElement.replaceChild(span, item);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    });
   }
-  cleanMark () {
-    console.log(this.textNodeList)
-    this._cleanMark(this.textNodeList)
-    this.textNodeList = []
+  cleanMark() {
+    console.log(this.textNodeList);
+    this._cleanMark(this.textNodeList);
+    this.textNodeList = [];
   }
-  private _cleanMark(textList:Text[]) {
-    const reg = new RegExp(`<span class="mark">(`+ textList +`)<\/span>`,'gi')
-      document.querySelectorAll<HTMLDivElement>('.mark-parent').forEach(item=>{
-        item.innerHTML = item.innerText
-      })
+  private _cleanMark(textList: Text[]) {
+    const reg = new RegExp(
+      `<span class="mark">(` + this.lastSearchStr + `)<\/span>`,
+      "gi"
+    );
+    try {
+      document.querySelectorAll<HTMLDivElement>(".parcel").forEach((item) => {
+        item.innerHTML = item.innerHTML.replaceAll(reg, "$1");
+        const text = document.createTextNode(item.innerText);
+        item.parentElement.replaceChild(text, item);
+      });
+    } catch (e) {
+      console.error(e);
+    }
+    this.lastSearchStr = this.searchStr;
+  }
+  private hasNoSearchElement(el: HTMLUnknownElement) {
+    if (["STYLE"].includes(el.nodeName)) {
+      return true;
+    }
+    return false;
+  }
+  private getDomIndex(list: ChildNode[], node: Text) {
+    return [].indexOf.call(list, node);
   }
 }
-export default LocalSearch
+export default LocalSearch;

@@ -17,5 +17,6 @@
   position: fixed;
   background-color: #fff;
   top: 0;
+  z-index: 999;
 }
 </style>

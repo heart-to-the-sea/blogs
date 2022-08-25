@@ -1,6 +1,12 @@
 <template>
   <div>
-    <BlogHeader></BlogHeader>
+    <BlogHeader>
+      <template v-slot:center>
+        <div class="center-box">
+          <BlogInput root-dom-name=".main" />
+        </div>
+      </template>
+    </BlogHeader>
     <main class="main" ref="box">
       <BlogBox v-for="index in 10" :key="index"></BlogBox>
     </main>
@@ -14,6 +20,9 @@ import BlogHeader from "../components/index/BlogHeader.vue";
 <style>
 .mark {
   color: red;
+}
+.jump-mark {
+  background-color: red;
 }
 </style>
 <style>
@@ -29,5 +38,19 @@ import BlogHeader from "../components/index/BlogHeader.vue";
   min-height: 90vh;
   margin: auto;
   margin-top: 75px;
+}
+.center-box {
+  width: 700px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+}
+.center {
+  margin: auto;
+  margin-top: 75px;
+  margin-left: 20%;
+  width: 50vw;
+  min-height: 90vh;
+  background-color: antiquewhite;
 }
 </style>
