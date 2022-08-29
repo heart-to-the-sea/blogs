@@ -1,5 +1,9 @@
 <template>
-  <div style="position: relative; width: 100%" @blur="handleFocus(0)">
+  <div
+    style="position: relative; width: 100%"
+    @blur="handleFocus(0)"
+    class="input-box"
+  >
     <input
       placeholder="请输入关键字查询"
       v-model="data"
@@ -15,7 +19,6 @@
             @click="jumpToDom(item)"
           ></div>
         </div>
-        <div></div>
       </div>
     </div>
   </div>
@@ -56,6 +59,7 @@ input::placeholder {
   z-index: 999;
   .list-box {
     width: 100%;
+    display: none;
     min-height: 20px;
     max-height: 600px;
     overflow-y: auto;
@@ -67,6 +71,9 @@ input::placeholder {
 }
 </style>
 <style lang="less" scoped>
+.input-box:hover .list-box {
+  display: block;
+}
 .list-node {
   height: 35px;
   width: 100%;
